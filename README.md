@@ -1,2 +1,2 @@
-# ILNP
-A project about NTUT professors
+# CovieV2
+A project about movie comment sentiment analyze
