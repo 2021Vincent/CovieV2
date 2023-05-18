@@ -7,7 +7,9 @@ import pandas as pd
 import datetime as dt
 def crawl_imdb_comments(url):
     res = []
-    review_url = url + "reviews" + "?sort=submissionDate&dir=asc&ratingFilter=0"
+    api = 'https://imdb-api.projects.thetuhin.com/reviews/'
+    id = url.split('/')[-1]
+    review_url = api + id + '?option=data&sortOrder=desc'
     soup = bs4.BeautifulSoup(requests.get(review_url, headers = {'accept-language':'en-US'}).text, "html.parser")
     # save html file
     with open(f"data/MovieData.html", mode="w+", encoding="utf8") as f:
