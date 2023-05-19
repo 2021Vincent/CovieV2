@@ -1,6 +1,10 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import json
+from datetime import datetime 
+from scipy.interpolate import make_interp_spline
+import matplotlib.dates as dates
+import numpy as np
 # analyze data 
 # 1. pulish year / rating
 # 2. average comment rating / years
@@ -38,6 +42,7 @@ def plot_top250_distribution():
     plt.show()
 
 def plot_comment_rating_years():
+    # 電影出版年份 / 平均評論分數
     df = pd.DataFrame(columns=['name', 'year', 'comment_rating'])
     for i in range(250):
         with open(f'data/Rank_{i+1}.json', 'r') as f:
@@ -54,7 +59,27 @@ def plot_comment_rating_years():
     plt.xlabel('year')
     plt.ylabel('comment_rating')
     plt.show()
+def plot_comment_rating_all_movie():
+    # 畫出每部電影每年的平均分數
+    year_rating = {}
+    for i in range(250):
+        with open(f'data/Rank_{i+1}.json', 'r') as f:
+            data = json.load(f)
+            reviews  = data['reviews']
+            for review in reviews:
+                year_rating[int(review['date'][:4])] = year_rating.get(int(review['date'][:4]), []) + [review['rating']]
+    x = []
+    y = []
+    for year in year_rating:
+        x.append(year)
+        y.append(sum(year_rating[year]) / len(year_rating[year]))
+    plt.plot(x, y)
+    plt.xlabel('year')
+    plt.ylabel('comment_rating')
+    plt.show()
+
 if __name__ == '__main__':
-    plot_year_rating()
+    # plot_year_rating()
     # plot_top250_distribution()
-    # plot_comment_rating_years()
+    plot_comment_rating_years()
+    plot_comment_rating_all_movie()
