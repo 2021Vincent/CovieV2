@@ -1,12 +1,19 @@
-from flair.embeddings import WordEmbeddings
+from flair.embeddings import WordEmbeddings, FlairEmbeddings, StackedEmbeddings
 from flair.data import Sentence
-from sentence_transformers import SentenceTransformer, util
 
-# model = SentenceTransformer('stsb-roberta-large')
-model = SentenceTransformer('stsb-mpnet-base-v2')
+sentence = Sentence('The grass is green .')
 
-word = "school"
-embedding = WordEmbeddings('en') # glove, en, crawl...
-s = Sentence(word)
-embedding.embed(s)
-print(s[0].embedding) # first word in sentence
+# create a StackedEmbedding object that combines glove and forward/backward flair embeddings
+stacked_embeddings = StackedEmbeddings([
+                                        WordEmbeddings('glove'),
+                                        FlairEmbeddings('news-forward'),
+                                        FlairEmbeddings('news-backward'),
+                                       ])
+
+# just embed a sentence using the StackedEmbedding as you would with any single embedding.
+stacked_embeddings.embed(sentence)
+
+# now check out the embedded tokens.
+for token in sentence:
+    print(token)
+    print(token.embedding)
