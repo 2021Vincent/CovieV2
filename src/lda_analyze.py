@@ -148,12 +148,3 @@ class lda_analyze:
 
         with open(f"src/lda/lda_comment_topic.json", "w") as outfile:
             json.dump(output_dict, outfile)
-
-                
-
-
-if __name__ == "__main__":
-    lda_analyze = lda_analyze()
-    lda_analyze.combine_date_of_comment()
-    # lda_analyze.analyze_year_comment()
-    
