@@ -49,52 +49,11 @@ class lda_classify:
         return 0
 
     def load_res(self):
-        self.res = json.loads(open("src/lda/lda_classify_comment_result.json", "r").read())
-
-    # def run(self):
-    #     flair_embedding_forward = FlairEmbeddings("news-forward")
-    #     category_sentence = Sentence(self.category)
-    #     flair_embedding_forward.embed(category_sentence)
-
-    #     res = {1970: {}, 1980: {}, 1990: {}, 2000: {}, 2010: {}, 2020: {}, 0: {}}
-    #     for cat in self.category:
-    #         for year in res:
-    #             res[year][cat] = 0
-
-    #     N = 250
-    #     for i in range(1, N + 1):
-    #         print(f"classfy topics from rank_{i}")
-    #         data = json.loads(open(f"src/lda/Rank_{i}_lda.json", "r").read())
-
-    #     for topic in data["topic"]:
-    #         sentence = Sentence(topic)
-    #         flair_embedding_forward.embed(sentence)
-
-    #         topic_cat = []
-
-    #         for word in sentence:
-    #             word_emb = word.embedding
-    #             for cat in category_sentence:
-    #                 cat_emb = cat.embedding
-    #                 if (cat.text not in topic_cat) and (self.sim(word_emb, cat_emb) > 0.3):
-    #                     topic_cat.append(cat.text)
-                
-    #             for cat in topic_cat:
-    #                 res[self.get_years(data["year"])][cat] += 1
-    #                 res[self.get_years(data["year"])]["count"] += 1
-    #             if topic_cat:
-    #                 res[self.get_years(data["year"])]["per_topic"] += 1
-
-    #     # save the result
-    #     with open("src/lda/lda_classify_result.json", "w") as outfile:
-    #         json.dump(res, outfile)
-    #     self.res = res
+        self.res = json.loads(open("data/lda/lda_classify_comment_result.json", "r").read())
 
     def show_res(self):
         df = pd.DataFrame(self.res)
-        # df = df.drop('0', axis=1)
         print(df)
-
 
         # bar chart for every year
         the_category = ['genre', 'story', 'dialog', 'scene', 'character', 'actor', 'music']
@@ -104,7 +63,6 @@ class lda_classify:
             plt.title(year)
             plt.show()
 
-
         # make res into percentage
         for year in df.head():
             for cat in self.res[year]:
@@ -112,7 +70,6 @@ class lda_classify:
                     continue
                 df.loc[cat, year] /= df.loc["topic_total", year]
         print(df)
-
 
         # plot
         for cat in ['genre', 'story', 'dialog', 'scene', 'character', 'actor', 'music']:
@@ -126,7 +83,7 @@ class lda_classify:
         # plt.legend()
         ["chararcter","genre","scene","actor","story","music","editing", "picture", "dialog", "acting"]
 
-    def run_by_year(self):
+    def run(self):
         flair_embedding_forward = FlairEmbeddings("news-forward")
         category_sentence = Sentence([i for i in self.category if i != "cat_total" and i != "topic_total"])
         flair_embedding_forward.embed(category_sentence)
@@ -142,11 +99,10 @@ class lda_classify:
         # year_file_cnt = {1990: 1, 2000: 11, 2010: 13, 2020: 10}
 
 
-
         for year in years:
             # for file_cnt in range(1, year_file_cnt[year]+1):
             print(f"classfying topic of year_{year}")
-            data = json.loads(open(f"src/lda/lda_comment_topic_{year}.json", "r").read())
+            data = json.loads(open(f"data/lda/lda_comment_topic_{year}.json", "r").read())
 
             for topic in data[str(year)]['topic']:
                 sentence = Sentence(topic)
@@ -167,26 +123,11 @@ class lda_classify:
                     res[year]["topic_total"] += 1
 
         # save the result
-        with open("src/lda/lda_classify_comment_result.json", "w") as outfile:
+        with open("data/lda/lda_classify_comment_result.json", "w") as outfile:
             json.dump(res, outfile)
                             
 if __name__ == "__main__":
     lda_classify = lda_classify()
-    # lda_classify.run_by_year()
+    # lda_classify.run()
     lda_classify.load_res()
     lda_classify.show_res()
-
-'''
-['genre', 'story', 'dialog', 'scene', 'character', 'actor', 'music']
-
-
-[ girl,      possessed, Vincent,   knight, God, 
-  encourage, Malcom,    possesses, kills,  Cole ]
-
-[ Mr,     super,  Incredible, family, hero, 
-  powers, heroes, Fantastic,  life,   Four ]
-
-
-[ movie, This, film, It, I, one, Death, A, best, see ]
-[ I, movie, see, time, one, It, seen, like, movies, This ]
-'''

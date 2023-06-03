@@ -7,70 +7,9 @@ import numpy as np
 
 # import nltk
 # nltk.download('stopwords')
-
-
 class lda_analyze:
     def __init__(self):
         pass
-
-    def run(self):
-        N = 250
-        for i in range(1, N + 1):
-            print(f"analyzing topic of rank_{i}")
-
-            data = json.loads(open(f"data/Rank_{i}.json", "r").read())
-            comments = []
-            output_dict = {}
-            output_dict["rank"] = data["rank"]
-            output_dict["name"] = data["name"]
-            output_dict["year"] = data["year"]
-            output_dict["rating"] = data["rating"]
-            output_dict["topic"] = [[] for i in range(10)]
-
-            for j, review in enumerate(data["reviews"]):
-                comments.append(review["content"])
-
-            tokenizer = RegexpTokenizer(r"\w+")
-            en_stop = stopwords.words("english")
-            doc = []
-
-            custom_stop_word = []
-            # for word in ['i', 'movie', 'the', 's', 'film', 't', 'it', 'this', 'can', 'he', 'she', 'and', 'u']:
-            #     custom_stop_word.append(word)
-            #     custom_stop_word.append(word.capitalize())
-            custom_stop_word.extend([i.lower() for i in data["name"].split()])
-            custom_stop_word.extend([i.capitalize() for i in data["name"].split()])
-
-            for comment in comments:
-                doc.append(
-                    [
-                        i
-                        for i in tokenizer.tokenize(comment)
-                        if (i not in en_stop and i not in custom_stop_word)
-                    ]
-                )
-
-            dic = corpora.Dictionary(doc)
-            corpus = [dic.doc2bow(doc) for doc in doc]
-            lda = gensim.models.LdaModel(
-                corpus=corpus,
-                id2word=dic,
-                num_topics=10,
-                random_state=100,
-                update_every=1,
-                passes=10,
-                alpha="auto",
-                per_word_topics=True,
-            )
-
-            for topic in lda.show_topics(formatted=False):
-                for word, prob in topic[1]:
-                    output_dict["topic"][topic[0]].append(word)
-                    print(word, end=" ")
-                print()
-
-            with open(f"src/lda/Rank_{i}_lda.json", "w") as outfile:
-                json.dump(output_dict, outfile)
     
     def combine_date_of_comment(self):
         N = 250
@@ -103,12 +42,7 @@ class lda_analyze:
     def analyze_year_comment(self):
         years = [1990, 2000, 2010, 2020]
         TOPIC_NUM = 50
-        # years = [1990]
         year_file_cnt = {1990: 2, 2000: 11, 2010: 13, 2020: 10}
-        # output_dict = {'1990': {'topic_num':TOPIC_NUM*year_file_cnt[1990], 'topic':[]}, 
-        #                '2000': {'topic_num':TOPIC_NUM*year_file_cnt[2000], 'topic':[]}, 
-        #                '2010': {'topic_num':TOPIC_NUM*year_file_cnt[2010], 'topic':[]}, 
-        #                '2020': {'topic_num':TOPIC_NUM*year_file_cnt[2020], 'topic':[]}}
         for year in years:
             # print(f"analyzing topic of year_{year}")
             output_dict = {}
@@ -153,7 +87,7 @@ class lda_analyze:
                 #     print(word, end=" ")
                 # print()
 
-            with open(f"src/lda/lda_comment_topic_{year}.json", "w") as outfile:
+            with open(f"data/lda/lda_comment_topic_{year}.json", "w") as outfile:
                 json.dump(output_dict, outfile)
 
 
