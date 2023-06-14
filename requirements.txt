@@ -3,3 +3,5 @@ transformers
 pandas
 torch
 flair
+bs4
+json
