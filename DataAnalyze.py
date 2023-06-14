@@ -25,10 +25,11 @@ def plot_year_rating(json_data):
     for i in range(1921, 2023, 10):
         x.append(f'{i}-{i+9}')
         y.append(df[(df['year'] >= i) & (df['year'] <= i+9)]['rating'].mean())
-    plt.plot(x, y)
+    plt.plot(x, y, label = 'Rating all')
     plt.title("Release year / Rating")
     plt.xlabel('year')
     plt.ylabel('rating')
+    plt.legend()
     plt.show()
 
 def plot_top250_distribution(json_data):
@@ -56,11 +57,11 @@ def plot_comment_rating_years(json_data):
     for i in range(1921, 2023, 10):
         x.append(f'{i}-{i+9}')
         y.append(df[(df['year'] >= i) & (df['year'] <= i+9)]['comment_rating'].mean())
-    plt.plot(x, y)
+    plt.plot(x, y, label = 'Comment rating')
     plt.title("Release year / Average comment rating")
     plt.xlabel('year')
     plt.ylabel('comment_rating')
-    plt.show()
+    # plt.show()
 def plot_comment_rating_all_movie(json_data):
     # 畫出每部電影每年的平均分數
     year_rating = {}
@@ -81,13 +82,27 @@ def plot_comment_rating_all_movie(json_data):
     plt.xlabel('year')
     plt.ylabel('comment_rating')
     plt.show()
+# 評論評分與純評分的關係
+def plot_comment_rating(json_data):
+    df = pd.DataFrame(columns=['name', 'year', 'rating', 'comment_rating'])
+    for i in range(250):
+        data = json_data[i]
+        reviews  = data['reviews']
+        reviews = [review for review in reviews if review['rating'] != 0]
+        for review in reviews:
+            df = pd.concat([df, pd.DataFrame({'name': [data['name']], 'year': [int(data['year'])], 'rating': [data['rating']], 'comment_rating': [review['rating']]})])
+    df.plot.scatter(x='rating', y='comment_rating')
+    plt.title("Rating / Comment rating")
+    plt.xlabel('rating')
+    plt.ylabel('comment_rating')
+    plt.show()
 
 if __name__ == '__main__':
     data = []
     for i in range(250):
         with open(f'data/Rank_{i+1}.json', 'r') as f:
             data.append(json.load(f))
-    plot_year_rating(data)
     plot_top250_distribution(data)
     plot_comment_rating_years(data)
+    plot_year_rating(data)
     plot_comment_rating_all_movie(data)
