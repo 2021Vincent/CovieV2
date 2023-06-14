@@ -5,3 +5,5 @@ torch
 flair
 bs4
 json
+nltk
+genism
